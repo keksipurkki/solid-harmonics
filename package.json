@@ -1,0 +1,28 @@
+{
+  "name": "solid-harmonics",
+  "version": "1.0.0",
+  "description": "Fast evaluation of solid harmonics",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --reporter spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/keksipurkki/solid-harmonics.git"
+  },
+  "author": "Elias Toivanen",
+  "license": "CC-BY-SA-4.0",
+  "bugs": {
+    "url": "https://github.com/keksipurkki/solid-harmonics/issues"
+  },
+  "homepage": "https://github.com/keksipurkki/solid-harmonics#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.1.2"
+  },
+  "dependencies": {
+    "math-factorial": "^1.0.0",
+    "ndarray": "^1.0.18",
+    "ndarray-ops": "^1.2.2"
+  }
+}

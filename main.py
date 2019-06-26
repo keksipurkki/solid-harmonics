@@ -8,8 +8,6 @@ import itertools as it
 
   Fast evaluation of solid harmonics in a 3D grid of points
 
-  Cryptic number crunching to the fullest!
-
 """
 
 _idx = lambda l,m: l*(l+1) + m
@@ -135,6 +133,7 @@ class SolidHarmonics(object):
                  zip(map(tuple,a),v) if val}
 
         if -l <= m+1 <= l:
+          print "got here", l, m, S[l-1][m]
           v = array(S[l-1][m].values())
           # Floating point division must be used
           v *= -sqrt((l + m)*(l - m)/((l + m + 1.0)*(l - m + 1.0)))
@@ -185,7 +184,7 @@ class SolidHarmonics(object):
 
 def main():
   lmax = 15
-  S = SolidHarmonics(15)
+  S = SolidHarmonics(2)
   # Evaluate the set at (0,0,0), (1,0,0) and (1,1,1)
   print S([[0,0,0], [1,0,0], [1,1,1]])
 

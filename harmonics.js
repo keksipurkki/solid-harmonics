@@ -10,12 +10,24 @@ const { X, Y, Z, ONE } = Monomial3D;
  *
  */
 
-function zeros(nrows, ncols) {
-  const out = [];
-  for (let i = 0; i < nrows; i++) {
-    out.push(Array(ncols).fill(0));
+/**
+ *
+ * Allocate multidimensional arrays
+ *
+ */
+function zeros(...dims) {
+  const [dim, ...rest] = dims;
+
+  if (!dim) {
+    throw new Error("at least one dimension is required");
   }
-  return out;
+
+  if (!rest.length) {
+    return Array(dim).fill(0);
+  }
+
+  return Array(dim).fill(undefined).map(_ => zeros(...rest));
+
 }
 
 const idx = (l, m) => l * (l + 1) + m;
@@ -160,20 +172,8 @@ class SolidHarmonics extends Array {
     assert(kappa.length === ncol);
 
     return points => {
-      const array = Array(points.length).fill(undefined);
-
-      for (let i = 0; i < array.length; i++) {
-        array[i] = Array(kappa.length).fill(undefined);
-        for (let j = 0; j < array[i].length; j++) {
-          array[i][j] = Array(3).fill(0);
-        }
-      }
-
-      const result = Array(points.length).fill(undefined);
-
-      for (let i = 0; i < result.length; i++) {
-        result[i] = Array(nrow).fill(0);
-      }
+      const array = zeros(points.length, kappa.length, 3);
+      const result = zeros(points.length, nrow);
 
       for (let j = 0; j < points.length; j++) {
         const tmp = array[j];
@@ -231,7 +231,7 @@ function _recurrenceMid(S, l, m) {
       new Monomial3D([0, 2, 0], c1), // y*y
       new Monomial3D([0, 0, 2], c1), // z*z
     ];
-    const polys = monos.map(mono => new Polynomial3D(S[l - 1][m]).times(mono));
+    const polys = monos.map(mono => S[l - 1][m].times(mono));
     result = polys.reduce((poly, p) => poly.plus(p), result);
   }
   return result;

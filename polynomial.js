@@ -106,11 +106,10 @@ Polynomial3D.prototype = {
       this._monomials[summand._exponent]._coeff += summand._coeff;
     }
 
-    if (!this._monomials[summand._exponent].coeff) {
-      delete this._monomials[summand._exponent];
-    }
-
-    if (Math.abs(this._monomials[summand._exponent].coeff) < Number.EPSILON) {
+    if (
+      !this._monomials[summand._exponent].coeff ||
+      Math.abs(this._monomials[summand._exponent].coeff) < Number.EPSILON
+    ) {
       delete this._monomials[summand._exponent];
     }
 
@@ -124,21 +123,17 @@ Polynomial3D.prototype = {
     const constant = Number(term);
 
     if (!isNaN(constant)) {
-
       return this.times(Monomial3D.constant(constant));
-
     } else if (term instanceof Monomial3D) {
-
       const terms = [];
       const [i, j, k] = term.exponent;
 
       Object.values(this._monomials).forEach(mono => {
         let [a, b, c] = mono.exponent;
-        terms.push([[a + i, b + j, c + k], mono.coeff * term.coeff ]);
+        terms.push([[a + i, b + j, c + k], mono.coeff * term.coeff]);
       });
 
       return new Polynomial3D(...terms);
-
     } else {
       throw new Error("expected a monomial or a scalar constant");
     }

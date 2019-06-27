@@ -175,12 +175,13 @@ class SolidHarmonics extends Array {
         result[i] = Array(nrow).fill(0);
       }
 
-      for (let i = 0; i < kappa.length; i++) {
-        for (let j = 0; j < points.length; j++) {
+      for (let j = 0; j < points.length; j++) {
+        const tmp = array[j];
+        for (let i = 0; i < kappa.length; i++) {
           // x => x**a, y => y**b, z => z** c
-          array[j][i][0] = points[j][0] ** kappa[i][0];
-          array[j][i][1] = points[j][1] ** kappa[i][1];
-          array[j][i][2] = points[j][2] ** kappa[i][2];
+          tmp[i][0] = points[j][0] ** kappa[i][0];
+          tmp[i][1] = points[j][1] ** kappa[i][1];
+          tmp[i][2] = points[j][2] ** kappa[i][2];
         }
       }
 
@@ -196,7 +197,6 @@ class SolidHarmonics extends Array {
       }
 
       return result;
-
     };
   }
 }

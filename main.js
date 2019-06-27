@@ -5,7 +5,7 @@
 const { SolidHarmonics } = require("./harmonics");
 
 function main() {
-  const lmax = 3;
+  const lmax = 15;
   const S = new SolidHarmonics(lmax);
 
   for (const [l, m, Slm] of S) {

@@ -4,7 +4,6 @@ const { range, cartesian, filter } = require("./itertools");
 const { sqrt } = Math;
 const { X, Y, Z, ONE } = Monomial3D;
 
-
 /**
  *
  * Fast evaluation of solid harmonics over 3D meshgrids
@@ -55,7 +54,7 @@ function lexicopos([a, b, c], lmax) {
  *  for the derivation of the recurrence relations
  */
 
-class SolidHarmonicArray extends Array {
+class SolidHarmonics extends Array {
   constructor(lmax) {
     super(lmax + 1);
     this.lmax = lmax;
@@ -136,6 +135,70 @@ class SolidHarmonicArray extends Array {
       },
     };
   }
+
+  /**
+   *
+   * Returns a function that evaluates solid harmonics over 3D meshgrids
+   *
+   */
+  toFunction() {
+    const lmax = this.lmax;
+    const nrow = (lmax + 1) ** 2;
+    const ncol = ((lmax + 1) * (lmax + 2) * (lmax + 3)) / 6;
+    const cache = zeros(nrow, ncol);
+    const kappa = [...cartiter(lmax)];
+
+    for (const [l, m, Slm] of this) {
+      for (const [k, v] of Slm.terms) {
+        const i = idx(l, m);
+        const j = lexicopos(k, lmax);
+        // Cache the coefficients
+        cache[i][j] = v;
+      }
+    }
+
+    assert(kappa.length === ncol);
+
+    return points => {
+      const array = Array(points.length).fill(undefined);
+
+      for (let i = 0; i < array.length; i++) {
+        array[i] = Array(kappa.length).fill(undefined);
+        for (let j = 0; j < array[i].length; j++) {
+          array[i][j] = Array(3).fill(0);
+        }
+      }
+
+      const result = Array(points.length).fill(undefined);
+
+      for (let i = 0; i < result.length; i++) {
+        result[i] = Array(nrow).fill(0);
+      }
+
+      for (let i = 0; i < kappa.length; i++) {
+        for (let j = 0; j < points.length; j++) {
+          // x => x**a, y => y**b, z => z** c
+          array[j][i][0] = points[j][0] ** kappa[i][0];
+          array[j][i][1] = points[j][1] ** kappa[i][1];
+          array[j][i][2] = points[j][2] ** kappa[i][2];
+        }
+      }
+
+      for (let i = 0; i < kappa.length; i++) {
+        for (let j = 0; j < points.length; j++) {
+          // x**a * y**b * z**c
+          const [xa, yb, zc] = array[j][i];
+          const p = xa * yb * zc;
+          for (let k = 0; k < cache.length; k++) {
+            result[j][k] += cache[k][i] * p;
+          }
+        }
+      }
+
+      return result;
+
+    };
+  }
 }
 
 function _A(l) {
@@ -174,32 +237,6 @@ function _recurrenceMid(S, l, m) {
   return result;
 }
 
-/**
- *
- * Returns a function that evaluates solid harmonics over 3D meshgrids
- *
- */
-function SolidHarmonics(lmax) {
-  const S = new SolidHarmonicArray(lmax);
-
-  const nrow = (lmax + 1) ** 2;
-  const ncol = ((lmax + 1) * (lmax + 2) * (lmax + 3)) / 6;
-  const cache = zeros(nrow, ncol);
-  const kappa = [...cartiter(lmax)];
-
-  for (const [l, m, Slm] of S) {
-    for (const [k, v] of Slm.terms) {
-      const i = idx(l, m);
-      const j = lexicopos(k, lmax);
-      // Cache the coefficients
-      cache[i][j] = v;
-    }
-  }
-
-  return _points => {};
-}
-
 module.exports = {
-  SolidHarmonicArray,
-  SolidHarmonics
+  SolidHarmonics,
 };

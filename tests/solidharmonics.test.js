@@ -1,10 +1,10 @@
 const test = require("tape");
-const { SolidHarmonicArray } = require("../harmonics");
+const { SolidHarmonics } = require("../harmonics");
 
-test("SolidHarmonicArray", describe => {
+test("SolidHarmonics", describe => {
   describe.test("lmax = 3 / reference values are reproduced", it => {
     const lmax = 3;
-    const S = new SolidHarmonicArray(lmax);
+    const S = new SolidHarmonics(lmax);
 
     it.plan((lmax + 1) ** 2);
 

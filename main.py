@@ -53,8 +53,12 @@ class SolidHarmonics(object):
       R = array(R)
       R = R.astype(float)
       S = R[:,None] ** self.kappa
+      print S.shape
+
       S = self.cache[:, None] * prod(S, -1)
+      print S.shape
       S = sum(S, -1)
+      print S.shape
       return S
 
     @staticmethod
@@ -133,7 +137,6 @@ class SolidHarmonics(object):
                  zip(map(tuple,a),v) if val}
 
         if -l <= m+1 <= l:
-          print "got here", l, m, S[l-1][m]
           v = array(S[l-1][m].values())
           # Floating point division must be used
           v *= -sqrt((l + m)*(l - m)/((l + m + 1.0)*(l - m + 1.0)))
@@ -183,10 +186,9 @@ class SolidHarmonics(object):
 
 
 def main():
-  lmax = 15
-  S = SolidHarmonics(2)
-  # Evaluate the set at (0,0,0), (1,0,0) and (1,1,1)
-  print S([[0,0,0], [1,0,0], [1,1,1]])
+  lmax = 3
+  S = SolidHarmonics(lmax)
+  print S([[0,0,0], [1,0,0], [0, 1, 0], [0, 0, 1], [1,1,1]])
 
 if __name__ == '__main__':
   main()

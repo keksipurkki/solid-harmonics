@@ -17,12 +17,7 @@
   },
   "homepage": "https://github.com/keksipurkki/solid-harmonics#readme",
   "devDependencies": {
-    "chai": "^3.5.0",
-    "mocha": "^3.1.2"
+    "tape": "^4.10.2"
   },
-  "dependencies": {
-    "math-factorial": "^1.0.0",
-    "ndarray": "^1.0.18",
-    "ndarray-ops": "^1.2.2"
-  }
+  "dependencies": {}
 }

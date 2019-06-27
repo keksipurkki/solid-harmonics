@@ -5,6 +5,8 @@
  *
  * coeff * x**a * y**b * z ** b
  *
+ * The exponents a,b,c are limited to 10-bit integers.
+ *
  */
 function Monomial3D([a, b, c], coeff = 1) {
   if (a > 2 ** 10) throw new Error("maximum exponent is 1024");
@@ -24,8 +26,31 @@ Monomial3D.prototype = {
   get coeff() {
     return this._coeff;
   },
-  toString() {
-    return `Monomial3D { coeff = ${this.coeff}, exponent = [${this.exponent}] }`;
+  [Symbol.toPrimitive](hint) {
+    if (hint !== "string") {
+      return;
+    }
+
+    const exponent = this.exponent;
+
+    let t = [..."xyz"].map((s, i) => {
+      switch (exponent[i]) {
+        case 0:
+          return "";
+        case 1:
+          return s;
+        default:
+          return `${s}**${exponent[i]}`;
+      }
+    });
+
+    t = t.filter(Boolean);
+
+    if (!t.length) {
+      return `${this.coeff.toFixed(4)}`;
+    } else {
+      return `${this.coeff.toFixed(4)} * ${t.join(" * ")}`;
+    }
   },
 };
 
@@ -44,41 +69,42 @@ Monomial3D.constant = function(coeff) {
  *
  */
 function Polynomial3D(...terms) {
-  this._terms = [];
+  this._monomials = {};
   terms
     .filter(([, c]) => Boolean(c))
-    .forEach(term => this._terms.push(new Monomial3D(...term)));
+    .forEach(term => {
+      const mono = new Monomial3D(...term);
+      this._monomials[mono._exponent] = mono;
+    });
 }
 
 Polynomial3D.prototype = {
   plus: function(summand) {
-
     if (summand instanceof Polynomial3D) {
-      let result = new Polynomial3D();
-      for (const mono of summand._terms) {
-        result = result.plus(mono);
-      }
-      return result;
+      return Object.values(summand._monomials).reduce(
+        (poly, term) => poly.plus(term),
+        this
+      );
     }
 
     if (!(summand instanceof Monomial3D)) {
       throw new TypeError("expected a monomial");
     }
 
-    this._terms = [...this._terms];
+    this._monomials = { ...this._monomials };
 
-    if (!this.terms[summand._exponent]) {
-      this._terms[summand._exponent] = summand;
+    if (!this._monomials[summand._exponent]) {
+      this._monomials[summand._exponent] = summand;
     } else {
-      this._terms[summand._exponent]._coeff += summand._coeff;
+      this._monomials[summand._exponent]._coeff += summand._coeff;
     }
 
-    if (!this._terms[summand._exponent].coeff) {
-      delete this._terms[summand._exponent];
+    if (!this._monomials[summand._exponent].coeff) {
+      delete this._monomials[summand._exponent];
     }
 
-    if (this.term[summand._exponent].coeff < Number.EPSILON) {
-      delete this._terms[summand._exponent];
+    if (Math.abs(this._monomials[summand._exponent].coeff) < Number.EPSILON) {
+      delete this._monomials[summand._exponent];
     }
 
     return this;
@@ -96,36 +122,34 @@ Polynomial3D.prototype = {
 
     } else if (term instanceof Monomial3D) {
 
-      const newTerms = [];
+      const terms = [];
       const [i, j, k] = term.exponent;
 
-      this.terms.forEach(mono => {
+      Object.values(this._monomials).forEach(mono => {
         let [a, b, c] = mono.exponent;
-        a += i;
-        b += j;
-        c += k;
-        const coeff = mono.coeff * term.coeff;
-        const result = new Monomial3D([a, b, c], coeff);
-        newTerms[result._exponent] = result;
+        terms.push([[a + i, b + j, c + k], mono.coeff * term.coeff ]);
       });
 
-      this._terms = newTerms;
-
-      return this;
+      return new Polynomial3D(...terms);
 
     } else {
-
       throw new Error("expected a monomial or a scalar constant");
-
     }
   },
 
   get terms() {
-    return this._terms.map(m => [m.exponent, m.coeff]);
+    const result = Object.values(this._monomials).map(m => [
+      m.exponent,
+      m.coeff,
+    ]);
+    return result;
   },
 
-  toString() {
-    return `Polynomial3D{ [${this.terms}] }`;
+  [Symbol.toPrimitive]: function() {
+    return `Polynomial3D{ ${Object.values(this._monomials)
+      .map(String)
+      .join(" + ")
+      .replace(/ \+ -/g, " − ")} }`;
   },
 };
 

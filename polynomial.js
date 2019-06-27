@@ -70,7 +70,14 @@ Monomial3D.constant = function(coeff) {
  */
 function Polynomial3D(...terms) {
   this._monomials = {};
-  terms
+
+  let input = terms;
+
+  if (input.length === 1 && input[0] instanceof Polynomial3D) {
+    input = input[0].terms;
+  }
+
+  input
     .filter(([, c]) => Boolean(c))
     .forEach(term => {
       const mono = new Monomial3D(...term);
@@ -143,6 +150,10 @@ Polynomial3D.prototype = {
       m.coeff,
     ]);
     return result;
+  },
+
+  get length() {
+    return this.terms.length;
   },
 
   [Symbol.toPrimitive]: function() {

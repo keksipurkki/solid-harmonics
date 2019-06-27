@@ -2,9 +2,9 @@
   "name": "solid-harmonics",
   "version": "1.0.0",
   "description": "Fast evaluation of solid harmonics",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
-    "test": "mocha --reporter spec"
+    "test": "tape 'tests/**/*.test.js'"
   },
   "repository": {
     "type": "git",

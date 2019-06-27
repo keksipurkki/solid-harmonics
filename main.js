@@ -147,34 +147,31 @@ function _A(l) {
 
 function _recurrenceMin(S, l) {
   const c0 = _A(l);
-  const a = new Polynomial3D(...S[l][l].terms);
-  const b = new Polynomial3D(...S[l][-l].terms);
-  return a.times(new Monomial3D(Y, c0)).plus(b.times(new Monomial3D(X, c0)));
+  return S[l][l]
+    .times(new Monomial3D(Y, c0))
+    .plus(S[l][-l].times(new Monomial3D(X, c0)));
 }
 
 function _recurrenceMax(S, l) {
   const c0 = _A(l);
-  const a = new Polynomial3D(...S[l][l].terms);
-  const b = new Polynomial3D(...S[l][-l].terms);
-  return a.times(new Monomial3D(X, c0)).plus(b.times(new Monomial3D(Y, -c0)));
+  return S[l][l]
+    .times(new Monomial3D(X, c0))
+    .plus(S[l][-l].times(new Monomial3D(Y, -c0)));
 }
 
 function _recurrenceMid(S, l, m) {
-  const { terms } = S[l][m];
   const c0 = (2.0 * l + 1.0) / sqrt((l + m + 1.0) * (l - m + 1.0));
-  let result = new Polynomial3D(...terms);
-  result = result.times(new Monomial3D(Z, c0));
+  let result = S[l][m].times(new Monomial3D(Z, c0));
 
   // Multiply by r ** 2 = x*x + y*y + z*z
   if (-l <= m + 1 && m + 1 <= l) {
     const c1 = -sqrt(((l + m) * (l - m)) / ((l + m + 1.0) * (l - m + 1.0)));
-    const { terms } = S[l - 1][m];
     const monos = [
       new Monomial3D([2, 0, 0], c1), // x*x
       new Monomial3D([0, 2, 0], c1), // y*y
       new Monomial3D([0, 0, 2], c1), // z*z
     ];
-    const polys = monos.map(mono => new Polynomial3D(...terms).times(mono));
+    const polys = monos.map(mono => new Polynomial3D(S[l - 1][m]).times(mono));
     result = polys.reduce((poly, p) => poly.plus(p), result);
   }
   return result;

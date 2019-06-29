@@ -2,7 +2,7 @@
   "name": "solid-harmonics",
   "version": "1.0.0",
   "description": "Fast evaluation of solid harmonics",
-  "main": "main.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "tape 'tests/**/*.test.js'"
   },
@@ -17,7 +17,11 @@
   },
   "homepage": "https://github.com/keksipurkki/solid-harmonics#readme",
   "devDependencies": {
-    "tape": "^4.10.2"
+    "@types/node": "12.0.10",
+    "@types/tape": "4.2.33",
+    "tape": "4.11.0",
+    "tslib": "1.10.0",
+    "typescript": "3.5.2"
   },
   "dependencies": {}
 }

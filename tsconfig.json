@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "es6",
+    "lib": ["dom"],
+    "strict": true,
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "noUnusedLocals": true
+  },
+  "include": ["lib", "index.d.ts"]
+}

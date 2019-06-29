@@ -1,5 +1,5 @@
-const test = require("tape");
-const { SolidHarmonics } = require("../harmonics");
+import * as test from "tape";
+import { SolidHarmonics } from "..";
 
 test("SolidHarmonics", describe => {
   describe.test("lmax = 3 / reference values are reproduced", it => {
@@ -16,26 +16,14 @@ test("SolidHarmonics", describe => {
     it.deepEqual(S[1][1].terms, [[[1, 0, 0], 1.0]], "l = 1, m = 1");
 
     // l = 2, m = -2, -1, 0, 1, 2
-    it.deepEqual(
-      S[2][-2].terms,
-      [[[1, 1, 0], 1.7320508075688772]],
-      "l = 2, m = -2"
-    );
-    it.deepEqual(
-      S[2][-1].terms,
-      [[[0, 1, 1], 1.7320508075688774]],
-      "l = 2, m = -1"
-    );
+    it.deepEqual(S[2][-2].terms, [[[1, 1, 0], 1.7320508075688772]], "l = 2, m = -2");
+    it.deepEqual(S[2][-1].terms, [[[0, 1, 1], 1.7320508075688774]], "l = 2, m = -1");
     it.deepEqual(
       S[2][0].terms,
       [[[2, 0, 0], -0.5], [[0, 2, 0], -0.5], [[0, 0, 2], 1]],
       "l = 2, m = 0"
     );
-    it.deepEqual(
-      S[2][1].terms,
-      [[[1, 0, 1], 1.7320508075688774]],
-      "l = 2, m = 1"
-    );
+    it.deepEqual(S[2][1].terms, [[[1, 0, 1], 1.7320508075688774]], "l = 2, m = 1");
     it.deepEqual(
       S[2][2].terms,
       [[[2, 0, 0], 0.8660254037844386], [[0, 2, 0], -0.8660254037844386]],
@@ -49,11 +37,7 @@ test("SolidHarmonics", describe => {
       "l = 3, m = -3"
     );
 
-    it.deepEqual(
-      S[3][-2].terms,
-      [[[1, 1, 1], 3.872983346207417]],
-      "l = 3, m = -2"
-    );
+    it.deepEqual(S[3][-2].terms, [[[1, 1, 1], 3.872983346207417]], "l = 3, m = -2");
 
     it.deepEqual(
       S[3][-1].terms,
